@@ -53,14 +53,14 @@ Para poner en marcha el proyecto localmente o en un servidor AWS, sigue estos pa
 Clonar el repositorio:
 
 Bash
-git clone https://github.com/TU_USUARIO/TU_REPOSITORIO.git
-cd TU_REPOSITORIO
+git clone https://github.com/yerayyeray/actividad61-aplicacion-php-desarrollo.git
+cd actividad61-aplicacion-php-desarrollo
 Levantar los servicios con Docker:
 
 Bash
 docker-compose up -d --build
 Acceso:
-Abre tu navegador en http://localhost:8080 (o la IP de tu instancia de AWS).
+Abre tu navegador en http://3.225.140.206:8080
 
 🔒 Notas sobre Seguridad
 El proyecto implementa las mejores prácticas aprendidas:
