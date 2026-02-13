@@ -12,23 +12,30 @@ Contenedores Docker: Separación de servicios (Servidor Web Apache/PHP y Base de
 
 📁 Estructura del Proyecto
 Basado en la arquitectura del repositorio:
+```
 .
 ├── sql/
 │   └── database.sql          # Esquema de la base de datos y datos iniciales
 ├── src/                      # Código fuente de la aplicación
+│   ├── html/                 # Archivos HTML estáticos
+│   ├── img/                  # Recursos visuales y assets
 │   ├── config.php            # Conexión centralizada a la base de datos
 │   ├── login.php             # Interfaz de inicio de sesión
 │   ├── login_action.php      # Lógica de validación de credenciales
 │   ├── registro.php          # Formulario de creación de cuenta
-│   ├── registro_action.php   # Lógica para insertar nuevos usuarios (con Hash)
-│   ├── home.php              # Panel principal tras iniciar sesión
-│   ├── add.php / edit.php    # Formularios para gestión de datos
+│   ├── registro_action.php   # Lógica para nuevos usuarios (Hash)
+│   ├── home.php              # Panel principal (Dashboard)
+│   ├── add.php / add_action.php    # Gestión de inserción de datos
+│   ├── edit.php / edit_action.php  # Gestión de edición de datos
 │   ├── delete.php            # Lógica para eliminar registros
-│   └── logout.php            # Cierre seguro de sesión
-├── docker-compose.yml        # Orquestación de contenedores (Web + DB)
-├── Dockerfile                # Configuración de la imagen personalizada de PHP
+│   ├── logout.php            # Cierre seguro de sesión
+│   ├── test.php              # Scripts de prueba de conexión
+│   └── index.php             # Punto de entrada principal
+├── .env                      # Variables de entorno
+├── docker-compose.yml        # Orquestación de contenedores
+├── Dockerfile                # Configuración de imagen PHP personalizada
 └── README.md                 # Documentación del proyecto
-
+```
 🛠️ Tecnologías Utilizadas
 Backend: PHP 8.x
 
