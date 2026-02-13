@@ -1,55 +1,65 @@
-🧟 Project Zomboid - Sistema de Gestión (DB)
-Este repositorio contiene la configuración de la base de datos MariaDB para una aplicación web CRUD en Vanilla PHP dockerizada. La temática principal es la gestión de supervivientes y sus rasgos (traits) dentro del universo de Project Zomboid.
+📝 Rasgos de Project Zomboid - Aplicación CRUD PHP
+Esta es una aplicación web dinámica desarrollada en PHP que permite gestionar un sistema de usuarios (Registro/Login) y realizar operaciones CRUD (Create, Read, Update, Delete) sobre una base de datos MariaDB. El proyecto está completamente containerizado con Docker, lo que facilita su despliegue en cualquier entorno, incluyendo AWS.
 
-📊 Estructura de la Base de Datos
-La base de datos se llama pz_yeray y consta de dos tablas independientes.
+🚀 Funcionalidades Principales
+Sistema de Autenticación Seguro: Registro de usuarios y login funcional con cifrado de contraseñas mediante password_hash y verificación con password_verify.
 
-1. Tabla: usuarios
-Gestiona el acceso de los usuarios al sistema.
+Gestión CRUD: Interfaz para añadir, listar, editar y eliminar rasgos o datos específicos.
 
-usuario_id: Clave primaria autoincremental.
+Sesiones de Usuario: Control de acceso mediante sesiones de PHP para proteger rutas privadas (como home.php).
 
-nombre_usuario: Identificador único del usuario.
+Contenedores Docker: Separación de servicios (Servidor Web Apache/PHP y Base de Datos MariaDB).
 
-contrasena: Almacena la contraseña hasheada mediante password_hash() (VARCHAR 255).
+📁 Estructura del Proyecto
+Basado en la arquitectura del repositorio:
+.
+├── sql/
+│   └── database.sql          # Esquema de la base de datos y datos iniciales
+├── src/                      # Código fuente de la aplicación
+│   ├── config.php            # Conexión centralizada a la base de datos
+│   ├── login.php             # Interfaz de inicio de sesión
+│   ├── login_action.php      # Lógica de validación de credenciales
+│   ├── registro.php          # Formulario de creación de cuenta
+│   ├── registro_action.php   # Lógica para insertar nuevos usuarios (con Hash)
+│   ├── home.php              # Panel principal tras iniciar sesión
+│   ├── add.php / edit.php    # Formularios para gestión de datos
+│   ├── delete.php            # Lógica para eliminar registros
+│   └── logout.php            # Cierre seguro de sesión
+├── docker-compose.yml        # Orquestación de contenedores (Web + DB)
+├── Dockerfile                # Configuración de la imagen personalizada de PHP
+└── README.md                 # Documentación del proyecto
 
-correo: Correo electrónico único.
+🛠️ Tecnologías Utilizadas
+Backend: PHP 8.x
 
-creacion: Marca de tiempo automática de registro.
+Base de Datos: MariaDB (MySQL)
 
-2. Tabla Principal: rasgos
-Almacena los rasgos oficiales del juego.
+Servidor: Apache (vía Docker)
 
-rasgos_id: Clave primaria (formato nombreTabla_id).
+Seguridad: Bcrypt para hashing de contraseñas.
 
-nombre_rasgo: Nombre oficial en español.
+Despliegue: Docker & Docker Compose.
 
-codigo_rasgo: Campo UNIQUE para evitar duplicados internos.
+📦 Instalación y Despliegue
+Para poner en marcha el proyecto localmente o en un servidor AWS, sigue estos pasos:
 
-puntos_coste: Valor numérico del rasgo (positivo o negativo).
+Clonar el repositorio:
 
-descripcion_efecto: Cadena con la explicación del rasgo.
+Bash
+git clone https://github.com/TU_USUARIO/TU_REPOSITORIO.git
+cd TU_REPOSITORIO
+Levantar los servicios con Docker:
 
-es_positivo: Campo numérico (booleano) para clasificar el rasgo.
+Bash
+docker-compose up -d --build
+Acceso:
+Abre tu navegador en http://localhost:8080 (o la IP de tu instancia de AWS).
 
-🔐 Seguridad y Credenciales
-Siguiendo las instrucciones obligatorias, el acceso se configura de la siguiente manera:
+🔒 Notas sobre Seguridad
+El proyecto implementa las mejores prácticas aprendidas:
 
-Usuario Root: Acceso habilitado para cualquier host ('root'@'%').
+Uso de ob_start() para manejo limpio de cabeceras y redirecciones.
 
-Contraseña Root/Usuario: Formato NombreApellido@Año (Sin tildes ni ñ).
+Validación de datos de entrada para prevenir errores de ejecución.
 
-Usuario de Aplicación: Formato usuario_inicialNombre_inicialesApellidos (ej: usuarioYCa).
-
-Hashing: Las contraseñas se gestionan en PHP con password_hash() y password_verify(). Nunca se guarda texto plano.
-
-🚀 Requisitos de la Aplicación (CRUD)
-La aplicación conectada a esta base de datos debe cumplir con:
-
-Mantenimiento completo: Listado, altas, bajas y modificaciones de la tabla rasgos.
-
-Formularios: Deben incluir campos de texto, numéricos y combos de opciones (select).
-
-Validación: Control de duplicados en el campo UNIQUE antes de insertar.
-
-Estilos: Uso obligatorio de Bootstrap y logotipos relacionados con Project Zomboid.
+Almacenamiento de contraseñas no legibles en la base de datos.
