@@ -1,144 +1,124 @@
 <?php
-/*Incluye parámetros de conexión a la base de datos: 
-DB_HOST: Nombre o dirección del gestor de BD MariaDB
-DB_NAME: Nombre de la BD
-DB_USER: Usuario de la BD
-DB_PASSWORD: Contraseña del usuario de la BD
-*/
+// home.php
+session_start();
 include_once("config.php");
 
-session_start();
-
+// 1. Control de acceso: Si no hay sesión, al login
 if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
 }
 
-$name = $_SESSION['name'] ?? '';
-$surname = $_SESSION['surname'] ?? '';
-$email = $_SESSION['email'] ?? '';
-?>
+// 2. Extraer datos de sesión
+$username = $_SESSION['username'];
+$email = $_SESSION['email'] ?? 'No definido';
 
+$error = $_SESSION['login_error'] ?? '';
+unset($_SESSION['login_error']);
+?>
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">	
-	<title>CRUD PHP</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Rasgos - Project Zomboid</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('img/fondoweb.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+        .table-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        h4 { color: white; text-shadow: 1px 1px 4px black; }
+        .user-info { color: #eee; margin-bottom: 20px; }
+    </style>
 </head>
 <body>
-<div>
-	<header>
-		<h1>APLICACION CRUD PHP</h1>
-	</header>
 
-	<main>
-	Bienvenido, <?php echo htmlspecialchars($name . " " . $surname); ?><br>
-    Email: <?php echo htmlspecialchars($email); ?>
-	
-	<p><a href="add.php">Alta</a></p>	
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow">
+  <div class="container">
+    <a class="navbar-brand" href="home.php">
+      <img src="html/logo2.jpg" alt="logo" width="30" height="30" class="d-inline-block align-text-top me-2">
+      Zomboid Traits Manager
+    </a>
+    <div class="d-flex">
+      <a class="btn btn-outline-light btn-sm me-2" href="add.php">Añadir Nuevo</a>
+      <a class="btn btn-danger btn-sm" href="logout.php">Salir</a>
+    </div>
+  </div>
+</nav>
 
-	<table border="1">
-	<thead>
-		<tr>
-			<th>Usuario</th>
-			<th>Nombre</th>
-			<th>Apellido</th>
-			<th>Edad</th>
-			<th>Puesto</th>
-			<th>Acciones</th>
-		</tr>
-	</thead>
-	<tbdody>
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h4>Bienvenido, <?php echo htmlspecialchars($username); ?></h4>
+            <p class="user-info">Sesión activa: <?php echo htmlspecialchars($email); ?></p>
+        </div>
+    </div>
 
-<?php
-/*Se realiza una consulta de selección la tabla empleados ordenados y almacena todos los registros en una estructura especial PARECIDA a una "tabla" llamada $resultado.
-Cada fila y cada columna de la tabla se corresponde con un registro y campo de la tabla EMPLEADOS.
-*/
-$sql="SELECT * FROM empleados ORDER BY apellido, nombre";
-//echo $sql.'<br>';
-$resultado = $mysqli->query($sql);
+    <div class="table-container mb-5">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Código</th>
+                        <th>Puntos</th>
+                        <th>Descripción</th>
+                        <th>Tipo</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php
+                // CAMBIO AQUÍ: Ordenado por rasgos_id de menor a mayor
+                $sql = "SELECT * FROM rasgos ORDER BY rasgos_id ASC";
+                $resultado = $mysqli->query($sql);
 
-//Cierra la conexión de la BD
-$mysqli->close();
+                if ($resultado && $resultado->num_rows > 0) {
+                    while($fila = $resultado->fetch_assoc()) {
+                        $badge = $fila['es_positivo'] 
+                            ? '<span class="badge bg-success">Positivo</span>' 
+                            : '<span class="badge bg-danger">Negativo</span>';
+                        
+                        $puntos_class = $fila['puntos_coste'] < 0 ? 'text-danger' : 'text-success';
 
-/*
-A continuación indicamos distintos manera de leer cada fila de la tabla anterior: 
-mysqli_fetch_array()- Almacena una fila (o registro) de la tabla anterior, $resultado, en un array asociativo, numérico o ambos
-mysqli_fetch_assoc()-  Almacena una fila de la tabla anterior, , $resultado, SOLO en un array asociativo
-mysqli_fetch_row() - Almacena una fila de la tabla anterior, , $resultado, en un array numérico
-
-Veamos la diferencia entre un array numérico y asosiativo. Antes que nada supongamos que hemos leido el 1º registro de la tabla:
-id=1
-nombre_usuario=javier
-contrasena=usuario@1
-correo=javier@gmail.com
-apellido=Coloma
-nombre=Javier
-edad=25
-puesto=contable
-creacion=Fecha y hora de creacion
-
-ARRAYS NUMÉRICO (se accede por índice). Donde los índices se corresponde con la POSICIÓN de cada campo en la tabla de empleados: 0->id, 1->Apellido, 2->Nombre, 3->Edad y 4-> Puesto
-$fila[0] -> Contiene el contenido del campo id del empleado actual: 1
-$fila[1] -> Contiene el contenido del campo nombre_usuario: javier
-$fila[2] -> Contiene el contenido del campo contrasena: usuario
-$fila[3] -> Contiene el contenido del campo correo:javier@gmail.com
-$fila[4] -> Contiene el contenido del campo apellido: Coloma
-$fila[5] -> Contiene el contenido del campo nombre: Javier 
-$fila[6] -> Contiene el contenido del campo edad: 25
-$fila[7] -> Contiene el el contenido del campo puesto: contable
-$fila[8] -> Contiene el el contenido del campo creacion: Fecha y hora de creacion
-
-ARRAYS ASOCIATIVO (se acceder por nombre): Donde los índices (conocidos como claves) se corresponde con el NOMBRE de cada campo de la tabla de empleados: id, apellido, nombre, edad y puesto.
-$fila["id"] -> Contiene el contenido del campo id del empleado actual: 1
-$fila["nombre_usuario"] -> Contiene el contenido del campo nombre_usuario: javier
-$fila["contrasena"] -> Contiene el contenido del campo contrasena: usuario
-$fila["correo"] -> Contiene el contenido del campo correo:javier@gmail.com
-$fila["apellido"] -> Contiene el contenido del campo apellido: Coloma
-$fila["nombre"] -> Contiene el contenido del campo nombre: Javier 
-$fila["edad"] -> Contiene el contenido del campo edad: 25
-$fila["puesto"] -> Contiene el el contenido del campo puesto: contable
-$fila["creacion"] -> Contiene el el contenido del campo creacion: Fecha y hora de creacion
-
-
-*/
-
-//Comprobamos si el nº de fila/registros es mayor que 0. La consulta genera un resultado válido
- if ($resultado->num_rows > 0) {
-
-/* A través de la estructura repetitiva "while" se recorre la "tabla" $resultados almacenando cada línea/registro en el array asociativo $fila. 
-Recuerda que $fila contiene el contenido de todos los campos del registro actual tal como explicamos anteriormente.
-El bucle finaliza cuando se llegue a la última línea (o registro) de la tabla $resultado. 
-A medida que avanza se va construyendo cada fila de la tabla HTML con todos los campos del empleado, hasta completar todos los registros.
-De los nueves campos de la tabla empleados solo se muestran algunos en la tabla HTML: nombre_usuario, nombre, apellido, edad y puesto.
-*/
-
-	while($fila = $resultado->fetch_array()) {
-		echo "<tr>\n";
-		echo "<td>".$fila['nombre_usuario']."</td>\n";
-		echo "<td>".$fila['nombre']."</td>\n";
-		echo "<td>".$fila['apellido']."</td>\n";
-		echo "<td>".$fila['edad']."</td>\n";
-		echo "<td>".$fila['puesto']."</td>\n";
-		echo "<td>";
-/* En la última columna se añade dos enlaces para editar y modificar el registro correspondiente. 
-Los datos se pueden enviar entre distintas páginas siguiendo distintos métodos. En este caso el id del registro a editar/eliminar se pasa a través de la URL. 
-Este forma de pasar el dato se conoce como: método GET*/
-		echo "<a href=\"edit.php?identificador=$fila[id]\">Edición</a>\n";
-		echo "<a href=\"delete.php?identificador=$fila[id]\" onClick=\"return confirm('¿Está segur@ que desea eliminar el empleado/a?')\" >Baja</a></td>\n";
-		echo "</td>";
-		echo "</tr>\n";
-	}//fin mientras
- }//fin si
-?>
-	</tbdody>
-	</table>
-	</main>
-	<footer>
-		<p><a href="logout.php">Cerrar sesión (Sign out) <?php echo $_SESSION['username']; ?></a></p>
-    	Created by the IES Miguel Herrero team &copy; 2026
-  	</footer>
+                        echo "<tr>";
+                        echo "<td><strong class='text-dark'>".$fila['rasgos_id']."</strong></td>";
+                        echo "<td><strong>".htmlspecialchars($fila['nombre_rasgo'])."</strong></td>";
+                        echo "<td><code>".htmlspecialchars($fila['codigo_rasgo'])."</code></td>";
+                        echo "<td class='$puntos_class'><strong>".$fila['puntos_coste']."</strong></td>";
+                        echo "<td>".htmlspecialchars($fila['descripcion_efecto'])."</td>";
+                        echo "<td>$badge</td>";
+                        echo "<td class='text-center'>";
+                        echo "<div class='btn-group'>";
+                        echo "<a href='edit.php?identificador=".$fila['rasgos_id']."' class='btn btn-sm btn-outline-primary'>Editar</a>";
+                        echo "<a href='delete.php?identificador=".$fila['rasgos_id']."' class='btn btn-sm btn-outline-danger' onclick=\"return confirm('¿Seguro que quieres eliminar este rasgo?')\">Borrar</a>";
+                        echo "</div>";
+                        echo "</td>";
+                        echo "</tr>";
+                    }
+                } else {
+                    echo "<tr><td colspan='7' class='text-center'>No se encontraron rasgos en la base de datos.</td></tr>";
+                }
+                $mysqli->close();
+                ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

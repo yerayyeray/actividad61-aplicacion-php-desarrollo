@@ -1,23 +1,55 @@
-# Aplicación web CRUD dockerizada desarrollada en vanilla php a implantar en un servidor de desarrollo
+🧟 Project Zomboid - Sistema de Gestión (DB)
+Este repositorio contiene la configuración de la base de datos MariaDB para una aplicación web CRUD en Vanilla PHP dockerizada. La temática principal es la gestión de supervivientes y sus rasgos (traits) dentro del universo de Project Zomboid.
 
->IES Miguel Herrero (Torrelavega) - Curso 2025/2026
->Módulo: IAW - Implantación de Aplicaciones Web  
->Ciclo: CFGS Administración de Sistemas Informáticos en Red  
+📊 Estructura de la Base de Datos
+La base de datos se llama pz_yeray y consta de dos tablas independientes.
 
-Este repositorio es una **guía ejemplo** para la realización de la **actividad 6.1** de IAW en lo que se refiere al despliegue de la aplicación CRUD en <u>DESARROLLO</u>. 
+1. Tabla: usuarios
+Gestiona el acceso de los usuarios al sistema.
 
-Contiene lo siguiente: 
+usuario_id: Clave primaria autoincremental.
 
-* Directorio */.github/workflows*: Contiene ejemplos de flujos de trabajo o "workflows" (Github Actions de GitHub). Orientados a la implementación de "pipeline" o tuberías CI/CD.
-* Directorio */conf*: Contiene el archivo de configuración sitio web por defecto en Apache.
-* Directorio */sql*: Contiene un archivo con un script SQL para la inicialización de la BD de MariaDB
-* Directorio */src*: Contiene un ejemplo de código correspondiente a la Aplicación web CRUD PHP . Implementa altas, bajas, modificaciones y listado de una pequeña tabla. Servirá de modelo para la realización de esta actividad.
-* Directorio /src/html: Contiene el modelo de Aplicación web anterior pero solo la parte ESTÁTICA (sin PHP).
-* Archivo .env: Configuración de variables de entorno (Contraseña Root, nombre BD, usuario BD y contraseña BD) utilizadas por el archivo docker-compose.yml.
-* Archivo Dockerfile: Instrucciones para la construcción de la imagen correspondiente a la aplicación web.
-* Archivo docker-compose.yml: Modelo escenario de contenedores para el despliegue de la aplicación PHP. Contiene 3 servicios: 
-1. *apache-php-crud*: Aplicación CRUD PHP implantada en un contenedor con Ubuntu 24.04, servidor web Apache 2.0 y php 8.0.
-2. *mariadb*: Sistema gestor de base de datos en MariaDB
-3. *phpmyadmin*: Herramienta web para gestionar bases de datos MySQL/MariaDB
+nombre_usuario: Identificador único del usuario.
 
+contrasena: Almacena la contraseña hasheada mediante password_hash() (VARCHAR 255).
 
+correo: Correo electrónico único.
+
+creacion: Marca de tiempo automática de registro.
+
+2. Tabla Principal: rasgos
+Almacena los rasgos oficiales del juego.
+
+rasgos_id: Clave primaria (formato nombreTabla_id).
+
+nombre_rasgo: Nombre oficial en español.
+
+codigo_rasgo: Campo UNIQUE para evitar duplicados internos.
+
+puntos_coste: Valor numérico del rasgo (positivo o negativo).
+
+descripcion_efecto: Cadena con la explicación del rasgo.
+
+es_positivo: Campo numérico (booleano) para clasificar el rasgo.
+
+🔐 Seguridad y Credenciales
+Siguiendo las instrucciones obligatorias, el acceso se configura de la siguiente manera:
+
+Usuario Root: Acceso habilitado para cualquier host ('root'@'%').
+
+Contraseña Root/Usuario: Formato NombreApellido@Año (Sin tildes ni ñ).
+
+Usuario de Aplicación: Formato usuario_inicialNombre_inicialesApellidos (ej: usuarioYCa).
+
+Hashing: Las contraseñas se gestionan en PHP con password_hash() y password_verify(). Nunca se guarda texto plano.
+
+🚀 Requisitos de la Aplicación (CRUD)
+La aplicación conectada a esta base de datos debe cumplir con:
+
+Mantenimiento completo: Listado, altas, bajas y modificaciones de la tabla rasgos.
+
+Formularios: Deben incluir campos de texto, numéricos y combos de opciones (select).
+
+Validación: Control de duplicados en el campo UNIQUE antes de insertar.
+
+Estilos: Uso obligatorio de Bootstrap y logotipos relacionados con Project Zomboid.

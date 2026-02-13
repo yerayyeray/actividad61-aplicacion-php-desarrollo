@@ -1,19 +1,46 @@
 <?php
-//Incluye fichero con parámetros de conexión a la base de datos
+session_start();
 include_once("config.php");
+$error = $_SESSION['login_error'] ?? '';
+unset($_SESSION['login_error']);
 ?>
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">	
-	<title>Modificaciones</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Registro</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<style>
+		body {
+    /* Ruta a tu imagen según tu estructura de carpetas */
+    background-image: url('img/fondoweb.jpg'); 
+    
+    /* Esto hace que la imagen cubra todo sin repetirse */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed; /* Mantiene el fondo quieto al hacer scroll */
+    
+    /* Elimina márgenes por defecto del navegador que causan bordes blancos */
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+	}
+	label {
+    color: white;
+}
+
+/* Para el título "Rasgos de Project Zomboid" */
+h1, h2, h3 {
+    color: white;
+}
+	</style>
 </head>
 <body>
 <div>
 	<header>
-		<h1>APLICACION CRUD PHP</h1>
+		<h1>Rasgos de Project Zomboid</h1>
 	</header>
 	<main>				
 
@@ -23,69 +50,57 @@ Para ello se comprueba la variable de formulario: "modifica" enviada al pulsar e
 Los datos del formulario se acceden por el método: POST
 */
 
-//echo $_POST['modifica'].'<br>';
 if(isset($_POST['modifica'])) {
-/*Se obtienen los datos del empleado (id, nombre, apellido, edad y puesto) a partir del formulario de edición (identificador, name, surname, age y job)  por el método POST.
-Se envía a través del body del HTTP Request. No aparecen en la URL como era el caso del otro método de envío de datos: GET
-Recuerda que   existen dos métodos con los que el navegador puede enviar información al servidor:
-1.- Método HTTP GET. Información se envía de forma visible. A través de la URL (header HTTP Request )
-En PHP los datos se administran con el array asociativo $_GET. En nuestro caso el dato del empleado se obiene a través de la clave: $_GET['identificador']
-2.- Método HTTP POST. Información se envía de forma no visible. A través del cuerpo del HTTP Request 
-PHP proporciona el array asociativo $_POST para acceder a la información enviada.
-*/
+	$identificador = isset($_POST['identificador']) ? intval($_POST['identificador']) : 0;
+	$nombre_rasgo = isset($_POST['nombre_rasgo']) ? trim($mysqli->real_escape_string($_POST['nombre_rasgo'])) : '';
+	$puntos_coste = isset($_POST['puntos_coste']) ? intval($_POST['puntos_coste']) : 0;
+	$descripcion_efecto = isset($_POST['descripcion_efecto']) ? trim($mysqli->real_escape_string($_POST['descripcion_efecto'])) : '';
+	$es_positivo = isset($_POST['es_positivo']) ? intval($_POST['es_positivo']) : 0;
 
-	$identificador = $mysqli->real_escape_string($_POST['identificador']);
-	$username = $mysqli->real_escape_string($_POST['username']);
-	$password = $mysqli->real_escape_string($_POST['password']);
-	$email = $mysqli->real_escape_string($_POST['email']);
-	$name = $mysqli->real_escape_string($_POST['name']);
-	$surname = $mysqli->real_escape_string($_POST['surname']);
-	$age = $mysqli->real_escape_string($_POST['age']);
-	$job = $mysqli->real_escape_string($_POST['job']);
-	if (empty($age)) {
-    $age = "NULL";} 
-	else {
-    $age = intval($age);}
-
-/*Con mysqli_real_scape_string protege caracteres especiales en una cadena para ser usada en una sentencia SQL.
-Esta función es usada para crear una cadena SQL legal que se puede usar en una sentencia SQL. 
-Los caracteres codificados son NUL (ASCII 0), \n, \r, \, ', ", y Control-Z.
-Ejemplo: Entrada sin escapar: "O'Reilly" contiene una comilla simple (').
-Escapado con mysqli_real_escape_string(): Se convierte en "O\'Reilly", evitando que la comilla se interprete como el fin de una cadena en SQL.
-*/	
-
-//Se comprueba si existen campos del formulario vacíos
-	if(empty($email) || empty($username) || empty($password)) 
+	//Se comprueba si existen campos del formulario vacíos
+	if(empty($nombre_rasgo) || empty($descripcion_efecto) || $identificador <= 0) 
 	{
-		if(empty($email)) {
-			echo "<div>Campo email vacío.</div>";
+		echo "<div style='color:red;'>";
+		if($identificador <= 0) {
+			echo "ID inválido.<br>";
 		}
-		if(empty($username)) {
-			echo "<div>Campo nombre de usuario vacío.</div>";
+		if(empty($nombre_rasgo)) {
+			echo "Campo nombre rasgo vacío.<br>";
 		}
-		if(empty($password)) {
-			echo "<div>Campo contraseña vacío.</div>";
+		if(empty($descripcion_efecto)) {
+			echo "Campo descripción vacío.<br>";
 		}
+		echo "</div>";
 		$mysqli->close();
-		echo "<a href='javascript:self.history.back();'>Volver atras</a>";
-	} //fin si
-	else //Se realiza la modificación de un registro de la BD. 
+		echo "<a href='javascript:self.history.back();'>Volver atrás</a>";
+	} 
+	else 
 	{
 		//Se actualiza el registro a modificar: update
-		$sql="UPDATE empleados SET nombre_usuario = '$username', contrasena = '$password', correo = '$email', nombre = '$name', apellido = '$surname',  edad = $age, puesto = '$job' WHERE id = $identificador";
-		//echo 'SQL: ' . $sql . '<br>';
-		$mysqli->query($sql);
-		$mysqli->close();
-        echo "<div>Empleado editado correctamente...</div>";
-		echo "<a href='home.php'>Ver resultado</a>";
-        //Se redirige a la página principal: home.php
-        //header("Location: home.php");
-	}// fin sino
-}//fin si
+		$sql = "UPDATE rasgos SET nombre_rasgo = '$nombre_rasgo', puntos_coste = $puntos_coste, 
+				descripcion_efecto = '$descripcion_efecto', es_positivo = $es_positivo 
+				WHERE rasgos_id = $identificador";
+		
+		if($mysqli->query($sql)) {
+			$mysqli->close();
+			echo "<div style='color:green;'>Rasgo editado correctamente.</div>";
+			echo "<a href='home.php'>Ver resultado</a>";
+		} else {
+			echo "<div style='color:red;'>Error al editar el rasgo: " . htmlspecialchars($mysqli->error) . "</div>";
+			$mysqli->close();
+			echo "<a href='javascript:self.history.back();'>Volver atrás</a>";
+		}
+	}
+}
 ?>
 
     
 	</main>	
+	<footer>
+		<p><a href="home.php">Volver</a></p>	
+		<p><a href="logout.php">Cerrar sesión (Sign out) <?php echo $_SESSION['username']; ?></a></p>
+		Created by Yeray Gutiérrez Mullor
+  	</footer>
 </div>
 </body>
 </html>

@@ -1,50 +1,82 @@
 <?php
-//Incluye fichero con parámetros de conexión a la base de datos
-include("config.php");
+session_start();
+include_once("config.php");
+$error = $_SESSION['login_error'] ?? '';
+unset($_SESSION['login_error']);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bajas</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Registro</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<style>
+		body {
+    /* Ruta a tu imagen según tu estructura de carpetas */
+    background-image: url('img/fondoweb.jpg'); 
+    
+    /* Esto hace que la imagen cubra todo sin repetirse */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed; /* Mantiene el fondo quieto al hacer scroll */
+    
+    /* Elimina márgenes por defecto del navegador que causan bordes blancos */
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+	}
+	label {
+    color: white;
+}
+
+/* Para el título "Rasgos de Project Zomboid" */
+h1, h2, h3 {
+    color: white;
+}
+	</style>
 </head>
 <body>
 <div>
 	<header>
-		<h1>APLICACION CRUD PHP</h1>
+		<h1>Rasgos de Project Zomboid</h1>
 	</header>
 	<main>
 
 <?php
-/*Obtiene el id del registro del empleado a eliminar, identificador, a partir de su URL. Se recibe el dato utilizando el método: GET 
-Recuerda que   existen dos métodos con los que el navegador puede enviar información al servidor:
-1.- Método HTTP GET. Información se envía de forma visible. A través de la URL (header HTTP Request )
-En PHP los datos se administran con el array asociativo $_GET. En nuestro caso el dato del empleado se obiene a través de la clave: $_GET['identificador']
-2.- Método HTTP POST. Información se envía de forma no visible. A través del cuerpo del HTTP Request 
-PHP proporciona el array asociativo $_POST para acceder a la información enviada.
-*/
+/*Obtiene el id del registro del rasgo a eliminar, identificador, a partir de su URL. Se recibe el dato utilizando el método: GET*/
 
-//Recoge el id del empleado a eliminar a través de la clave identificador del array asociativo $_GET y lo almacena en la variable identificador
-$identificador = $_GET['identificador'];
+//Recoge el id del rasgo a eliminar a través de la clave identificador del array asociativo $_GET
+$identificador = isset($_GET['identificador']) ? intval($_GET['identificador']) : 0;
 
-//Con mysqli_real_scape_string protege caracteres especiales en una cadena para ser usada en una sentencia SQL.
-$identificador = $mysqli->real_escape_string($identificador);
+if($identificador <= 0) {
+	echo "<div style='color:red;'>ID inválido.</div>";
+	echo "<a href='home.php'>Volver</a>";
+	exit();
+}
 
 //Se realiza el borrado del registro: delete.
-$sql="DELETE FROM empleados WHERE id = $identificador";
+$sql="DELETE FROM rasgos WHERE rasgos_id = $identificador";
 //echo 'SQL: ' . $sql . '<br>';
-$result = $mysqli->query($sql);
-//Se cierra la conexión de base de datos previamente abierta
-$mysqli->close();
-echo "<div>Empleado/a borrado correctamente...</div>";
-echo "<a href='home.php'>Ver resultado</a>";
-//Se redirige a la página principal: home.php
-//header("Location:home.php");
+
+if($mysqli->query($sql)) {
+	$mysqli->close();
+	echo "<div style='color:green;'>Rasgo eliminado correctamente.</div>";
+	echo "<a href='home.php'>Ver resultado</a>";
+} else {
+	echo "<div style='color:red;'>Error al eliminar el rasgo: " . htmlspecialchars($mysqli->error) . "</div>";
+	$mysqli->close();
+	echo "<a href='home.php'>Volver</a>";
+}
 ?>
  
     </main>
+	<footer>
+		<p><a href="home.php">Volver</a></p>	
+		<p><a href="logout.php">Cerrar sesión (Sign out) <?php echo $_SESSION['username']; ?></a></p>
+		Created by Yeray Gutiérrez Mullor
+  	</footer>
 </div>
 </body>
 </html>

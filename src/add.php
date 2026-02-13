@@ -1,83 +1,107 @@
 <?php
+// add.php
 session_start();
+include_once("config.php");
 
+// Control de acceso: Si no hay sesión iniciada, al login
 if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Altas</title>
+    <title>Agregar Rasgo - Project Zomboid</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('img/fondoweb.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+        .form-container {
+            background-color: white; /* Bloque de texto blanco */
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+        .navbar-brand img { margin-right: 10px; }
+        .form-label { color: #333; font-weight: bold; }
+        footer { color: white; text-shadow: 1px 1px 2px black; font-size: 0.9rem; }
+    </style>
 </head>
 <body>
-<div>
-	<header>
-		<h1>APLICACION CRUD PHP</h1>
-	</header>
-	<main>				
-	<h2>Alta</h2>
-<!--FORMULARIO DE ALTA. Al hacer click en el botón Agregar, llama a la página: add.php (form action="add.php")
-La página: add.php se encargará de proceder a la inserción del registro en la tabla de empleados
--->
 
-	<form action="add_action.php" method="post">
-		<div>
-			<label for="email">Correo</label>
-			<input type="email" name="email" id="email" placeholder="correo electrónico" required>
-		</div>
-		<div>
-			<label for="username">Usuario</label>
-			<input type="text" name="username" id="username" placeholder="nombre usuario" required>
-		</div>
-		<div>
-			<label for="name">Contraseña</label>
-			<input type="password" name="password" id="password" placeholder="contraseña" required>
-		</div>
-		<div>
-			<label for="name">Nombre</label>
-			<input type="text" name="name" id="name" placeholder="nombre">
-		</div>
+<nav class="navbar navbar-dark bg-dark shadow">
+    <div class="container">
+        <a class="navbar-brand" href="home.php">
+            <img src="html/logo2.jpg" alt="logo" width="30" height="30" class="d-inline-block align-text-top">
+            Rasgos de Project Zomboid
+        </a>
+    </div>
+</nav>
 
-		<div>
-			<label for="surname">Apellido</label>
-			<input type="text" name="surname" id="surname" placeholder="apellido">
-		</div>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="form-container">
+                <h2 class="text-dark mb-4 border-bottom pb-2">Añadir Nuevo Rasgo</h2>
 
-		<div>
-			<label for="age">Edad</label>
-			<input type="number" name="age" id="age" placeholder="edad">
-		</div>
+                <form action="add_action.php" method="post">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nombre_rasgo" class="form-label">Nombre del Rasgo</label>
+                            <input type="text" name="nombre_rasgo" id="nombre_rasgo" class="form-control" placeholder="Ejemplo" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="codigo_rasgo" class="form-label">Código Interno</label>
+                            <input type="text" name="codigo_rasgo" id="codigo_rasgo" class="form-control" placeholder="Ejemplo" required>
+                        </div>
+                    </div>
 
-		<div>
-			<label for="job">Puesto</label>
-			<select name="job" id="job" placeholder="puesto">
-				<option value="" disabled selected>Seleccione un puesto</option>
-				<option value="administrativo">administrativo</option>
-				<option value="contable">contable</option>
-				<option value="dependiente">dependiente</option>
-				<option value="empleado">empleado</option>
-				<option value="gerente">gerente</option>
-				<option value="repartidor">repartidor</option>
-				<option value="repartidor">usuario</option>
-			</select>	
-		</div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="puntos_coste" class="form-label">Puntos de Coste</label>
+                            <input type="number" name="puntos_coste" id="puntos_coste" class="form-control" placeholder="Ejemplo" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="es_positivo" class="form-label">Tipo de Rasgo</label>
+                            <select name="es_positivo" id="es_positivo" class="form-select" required>
+                                <option value="" disabled selected>-- Selecciona tipo --</option>
+                                <option value="1">Positivo</option>
+                                <option value="0">Negativo</option>
+                            </select>
+                        </div>
+                    </div>
 
-		<div>
-			<button type="submit" name="inserta" value="si">Aceptar</button>
-			<button type="button" onclick="location.href='home.php'">Cancelar</button>
-		</div>
-	</form>
-	
-	</main>	
-	<footer>
-		<p><a href="home.php">Volver</a></p>	
-		<p><a href="logout.php">Cerrar sesión (Sign out) <?php echo $_SESSION['username']; ?></a></p>
-		Created by the IES Miguel Herrero team &copy; 2026
-  	</footer>
+                    <div class="mb-4">
+                        <label for="descripcion_efecto" class="form-label">Descripción del Efecto</label>
+                        <textarea name="descripcion_efecto" id="descripcion_efecto" class="form-control" rows="4" placeholder="Describe qué hace este rasgo en el juego..." required></textarea>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" name="inserta" value="si" class="btn btn-primary px-4">Guardar Rasgo</button>
+                        <a href="home.php" class="btn btn-outline-secondary px-4">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+
+            <footer class="text-center py-3">
+                <p class="mb-0">Created by Yeray Gutiérrez Mullor</p>
+                <p class="opacity-75">Panel de Superviviente: <?php echo htmlspecialchars($_SESSION['username']); ?></p>
+            </footer>
+        </div>
+    </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
