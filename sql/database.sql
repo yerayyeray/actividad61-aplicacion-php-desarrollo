@@ -54,7 +54,3 @@ VALUES ('Ojos de gato', 'CatEyes', 2, 'Mejor vision en la oscuridad.', 1),
        ('Hemofobico', 'Hemophobic', -5, 'Panico al curar heridas y estres al estar ensangrentado.', 0),
        ('Agorafobico', 'Agoraphobic', -4, 'Entra en panico cuando esta en exteriores.', 0),
        ('Asmatico', 'Asthmatic', -5, 'La resistencia se agota mas rapido.', 0);
-
--- No se deben insertar contraseñas en texto plano. Los usuarios se deben registrar
--- a través del proceso de registro de la aplicación (`registro.php`) que
--- almacena contraseñas hasheadas con password_hash().
