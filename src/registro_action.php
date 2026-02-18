@@ -57,7 +57,6 @@ exit();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            /* Ruta corregida a tu carpeta img/ */
             background-image: url('img/fondoweb.jpg'); 
             background-size: cover;
             background-position: center;
@@ -70,7 +69,7 @@ exit();
             margin: 0;
         }
         .status-card {
-            background-color: white; /* Fondo blanco solicitado */
+            background-color: white; 
             color: #333;
             border-radius: 15px;
             padding: 40px;
@@ -85,7 +84,7 @@ exit();
             width: 100%;
         }
         .header-title {
-            color: #d9534f; /* Rojo oscuro para el título principal */
+            color: #d9534f; 
             font-weight: bold;
             text-transform: uppercase;
             margin-bottom: 20px;
