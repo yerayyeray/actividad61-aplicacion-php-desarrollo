@@ -70,7 +70,7 @@ if (isset($_SESSION['username'])) {
 <div class="welcome-card">
     <header>
         <img src="html/logo.png" alt="logo" class="logo-main">
-        <h1>Rasgos Project Zomboid test1</h1>
+        <h1>Rasgos Project Zomboid</h1>
         <p class="text-muted mb-4">Gestiona y consulta la base de datos de rasgos para tus supervivientes.</p>
     </header>
 
